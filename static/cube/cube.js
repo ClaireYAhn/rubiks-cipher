@@ -373,5 +373,7 @@
     const hp = new URLSearchParams(location.hash.slice(1));
     if (hp.get("f") && hp.get("f").length === 54) setFacelets(hp.get("f"));
     if (hp.has("back")) { flipTo(true); flipAnim = null; viewGroup.quaternion.copy(FLIP_Q); }
+    if (hp.has("spin")) viewGroup.quaternion.setFromAxisAngle(new THREE.Vector3(0, 1, 0), parseFloat(hp.get("spin")) * Math.PI / 180);
+    if (hp.has("clean")) document.body.classList.add("clean");   // just the cube, for banner frames
   }
 })();
