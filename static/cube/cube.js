@@ -95,11 +95,21 @@
       })(t0);
     });
   }
+  let playToken = 0;
   async function play(moves, ms, onStep) {
+    const token = ++playToken;
     busy = true;
-    for (let i = 0; i < moves.length; i++) { await doMove(moves[i], ms); if (onStep) onStep(i + 1, moves.length); }
+    $("status").classList.add("live");                // bigger move-by-move line while the cube turns
+    for (let i = 0; i < moves.length; i++) {
+      await doMove(moves[i], ms);
+      if (token !== playToken) return false;          // cancelled by New words
+      if (onStep) onStep(i + 1, moves.length);
+    }
+    $("status").classList.remove("live");
     busy = false;
+    return true;
   }
+  function cancelPlay() { playToken++; busy = false; $("status").classList.remove("live"); }
 
   // fixed-camera export (must match cube_vision.py)
   const exportRenderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
@@ -173,7 +183,7 @@
   const wordEls = [...document.querySelectorAll("#words span")];
   const MOVE_MS = 260;
   let state = { scramble: null, pngs: null };
-  const status = (msg, err) => { $("status").textContent = msg; $("status").className = "hint" + (err ? " err" : ""); };
+  const status = (msg, err) => { const live = $("status").classList.contains("live"); $("status").textContent = msg; $("status").className = "hint" + (err ? " err" : "") + (live && !err ? " live" : ""); };
   const detail = msg => { $("detail").textContent = msg; };
   const clearWords = () => wordEls.forEach(el => { el.textContent = ""; el.className = ""; });
   const showWord = (i, w, tier) => {
@@ -207,16 +217,27 @@
     state.scramble = res.scramble; state.facelets = res.facelets;
     resetCube(); setFacelets(CFG.solved);
     status(`scrambling: ${res.scramble.length} moves`);
-    await play(res.scramble, MOVE_MS, (i, n) => status(`scrambling: ${res.scramble.slice(0, i).join(" ")}`));
+    if (!await play(res.scramble, MOVE_MS, (i, n) => status(`scrambling: ${res.scramble.slice(0, i).join(" ")}`))) return;
     status(`${res.scramble.length} moves. The cube now says "${words.join(" ")}". Export it.`);
     detail(`${tierLine(res.words, res.tiers)}\n${CFG.data_bits} bits: ${res.bits}\nscramble (${res.scramble.length} moves): ${res.scramble.join(" ")}`);
     $("export").disabled = $("replay").disabled = false;
   });
 
+  on("clear", "click", () => {
+    cancelPlay();
+    state = { scramble: null, pngs: null };
+    ["w1", "w2", "w3"].forEach(id => $(id).value = "");
+    resetCube(); setFacelets(CFG.solved); flipTo(false);
+    clearWords(); detail(""); $("thumbs").innerHTML = "";
+    $("export").disabled = $("replay").disabled = true;
+    status("type three new words, or press Random");
+    $("w1").focus();
+  });
+
   on("replay", "click", async () => {
     if (busy || !state.scramble) return;
     resetCube(); setFacelets(CFG.solved);
-    await play(state.scramble, MOVE_MS, (i) => status(`scrambling: ${state.scramble.slice(0, i).join(" ")}`));
+    if (!await play(state.scramble, MOVE_MS, (i) => status(`scrambling: ${state.scramble.slice(0, i).join(" ")}`))) return;
     status(`${state.scramble.length} moves. Export it.`);
   });
 
@@ -326,6 +347,14 @@
     if (!ok) { shots = []; renderShots(); return status(res.error + " (try again)", true); }
     stopCam(); await playResult(res);
   }
+  on("restart", "click", () => {
+    cancelPlay(); stopCam();
+    shots = []; renderShots();
+    chosen = []; $("files").value = ""; $("thumbs-in").innerHTML = ""; $("decode").disabled = true;
+    resetCube(); setFacelets(CFG.solved); flipTo(false);
+    clearWords(); detail("");
+    status("load the two exported images, or press Use camera");
+  });
   on("usecam", "click", startCam);
   on("camclose", "click", () => { stopCam(); status("camera closed"); });
   on("shot", "click", async () => {
