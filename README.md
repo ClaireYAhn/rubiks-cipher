@@ -3,7 +3,7 @@
 > A scrambled cube looks like noise. This one is a sentence. Solve it and the words come out.
 
 Three words -> one Rubik's cube scramble -> two pictures (or two phone photos of the screen) -> three words.
-See CUBE.md for the method and the file map.
+See CUBE.md for the method and the file map. 
 
 ## Run locally
 ```bash
@@ -15,3 +15,6 @@ python -m venv .venv && .venv/bin/pip install -r requirements.txt
 ## Deploy the decode site (judges scan a QR on their own phones)
 Docker host of your choice: Render (render.yaml included, free plan) or Hugging Face Spaces (Docker SDK, port 7860).
 `CUBE_MODE=both` serves the encoder too.
+
+
+(Made for durhack 2026, QRT encoder challenge)
