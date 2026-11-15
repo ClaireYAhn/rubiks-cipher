@@ -1,0 +1,11 @@
+pillow
+opencv-python-headless
+numpy
+reedsolo
+# cube prototype (cube_app.py)
+flask
+kociemba
+# camera edition
+pillow-heif
+cryptography
+qrcode
