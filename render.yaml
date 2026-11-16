@@ -6,3 +6,10 @@ services:
     envVars:
       - key: CUBE_MODE
         value: decode
+  - type: web
+    name: rubiks-cipher-encode
+    runtime: docker
+    plan: free
+    envVars:
+      - key: CUBE_MODE
+        value: encode
