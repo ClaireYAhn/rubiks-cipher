@@ -12,6 +12,7 @@
 </p>
 
 <p align="center">
+  <a href="https://rubiks-cipher-encode-dst6.onrender.com/">Live encoder</a> ·
   <a href="https://rubiks-cipher-decode.onrender.com/">Live decoder</a> ·
   <a href="#how-it-works">How it works</a> ·
   <a href="#the-maths">The maths</a> ·
@@ -97,7 +98,7 @@ with letter-frequency compression. A word table is what makes a word cost 19 bit
   <img src="docs/decode_qr.png" alt="QR code for the live decoder" width="200">
 </p>
 
-Open the live decoder on a phone, press **Use camera**, and photograph the encoder's laptop screen twice: the normal
+Open the [live encoder](https://rubiks-cipher-encode-dst6.onrender.com/) on a laptop, then open the live decoder on a phone, press **Use camera**, and photograph the encoder's laptop screen twice: the normal
 view, then after pressing **Other side** on the encoder. A green outline and a "Cube detected" badge appear when the
 cube is found, the shutter unlocks, and after the second photo the cube is read and solved on the phone.
 
